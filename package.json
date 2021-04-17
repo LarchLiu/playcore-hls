@@ -1,10 +1,9 @@
 {
   "name": "@cloudgeek/playcore-hls",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Support HLS file playback via hls.js",
   "main": "dist/playcore-hls.common.js",
   "scripts": {
-    "dev": "vue-cli-service serve",
     "build": "vue-cli-service build --target lib ./src/index.js",
     "lint": "vue-cli-service lint --ext .js ./src"
   },
