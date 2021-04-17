@@ -1,0 +1,64 @@
+{
+  "name": "@cloudgeek/playcore-hls",
+  "version": "0.1.0",
+  "description": "Support HLS file playback via hls.js",
+  "main": "dist/playcore-hls.common.js",
+  "scripts": {
+    "dev": "vue-cli-service serve",
+    "build": "vue-cli-service build --target lib ./src/index.js",
+    "lint": "vue-cli-service lint --ext .js ./src"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LarchLiu/playcore-hls.git"
+  },
+  "keywords": [
+    "hls",
+    "vue3-video-player"
+  ],
+  "author": "Alex Liu",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/LarchLiu/playcore-hls/issues"
+  },
+  "homepage": "https://github.com/LarchLiu/playcore-hls#readme",
+  "files": [
+    "dist"
+  ],
+  "dependencies": {
+    "@cloudgeek/vue3-video-player": "^0.3.0",
+    "ismobilejs": "^1.1.1",
+    "load-script": "^1.0.0",
+    "ua-parser-js": "^0.7.21"
+  },
+  "devDependencies": {
+    "@babel/preset-env": "^7.9.5",
+    "@vue/cli-plugin-babel": "^4.5.0",
+    "@vue/cli-plugin-eslint": "^4.5.0",
+    "@vue/cli-service": "^4.5.0",
+    "@vue/compiler-sfc": "^3.0.0",
+    "@vue/eslint-config-standard": "^5.1.2",
+    "babel-core": "^6.26.3",
+    "babel-eslint": "^10.1.0",
+    "babel-loader": "^8.1.0",
+    "eslint": "^6.8.0",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.0",
+    "eslint-plugin-vue": "^7.0.0-0"
+  },
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "node": true
+    },
+    "extends": [
+      "plugin:vue/essential",
+      "eslint:recommended"
+    ],
+    "parserOptions": {
+      "parser": "babel-eslint"
+    },
+    "rules": {}
+  }
+}
