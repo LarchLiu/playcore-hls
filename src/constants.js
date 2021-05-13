@@ -16,17 +16,10 @@ export const HLS_DEFAULT_CONFIG = {
   abrBandWidthUpFactor: 1
 }
 
-export const ERROR_TYPE = {
-  bufferAppendingError: 1,
-  levelLoadTimeOut: 1,
-  manifestLoadError: 1,
-  audioTrackLoadError: 1,
-  fragLoadError: 3,
-};
-
 // some hls error is not hight level for UI to response
 export const HLS_ERROR_WHITE = {
-  bufferStalledError: 1
+    networkError: { count: 0 },
+    mediaError: { count: 0 },
 }
 
 export const HLS_EVENTS = {

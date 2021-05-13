@@ -1,6 +1,6 @@
 {
   "name": "@cloudgeek/playcore-hls",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Support HLS file playback via hls.js",
   "main": "dist/playcore-hls.common.js",
   "scripts": {

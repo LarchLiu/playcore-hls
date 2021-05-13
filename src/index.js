@@ -5,14 +5,14 @@
 import loadScript from 'load-script'
 import { BaseVideoCore, EVENTS } from '@cloudgeek/vue3-video-player'
 // import EVENTS from '../constants/EVENTS'
-import { isMSESupported, isChrome, isAndroid, isApple, isUC, getFormatBandwidth } from './util'
-import { LOAD_SDK_TIMEOUT, HLS_SDK, DEFAULT_HLS_RESOLUTION, HLS_DEFAULT_CONFIG, ERROR_TYPE, HLS_ERROR_WHITE, HLS_EVENTS } from './constants'
+import { isMSESupported, isChrome, isAndroid, isApple, isUC, getFormatBandwidth, parseMediaList } from './util'
+import { LOAD_SDK_TIMEOUT, HLS_SDK, DEFAULT_HLS_RESOLUTION, HLS_DEFAULT_CONFIG, HLS_ERROR_WHITE, HLS_EVENTS } from './constants'
 
 class HLSCore extends BaseVideoCore {
 
 
   init () {
-    
+
     if (!window.Hls) {
       this.loadSDK(() => {
         this.pause()
@@ -28,10 +28,10 @@ class HLSCore extends BaseVideoCore {
   initHLSCore() {
     const config = Object.assign({}, HLS_DEFAULT_CONFIG, this.config)
     const hls = new Hls(config)
+    this.parseSource(this.config.src)
     hls.loadSource(this.config.src)
     hls.attachMedia(this.$video)
     this.pause()
-    this.hlsErrorCount = 0
     hls.on(HLS_EVENTS.MANIFEST_PARSED, (event, result) => {
       if (result.levels.length <= 1) {
         hls.abrController.nextAutoLevel = -1
@@ -53,6 +53,18 @@ class HLSCore extends BaseVideoCore {
   parse () {
     // @override the default parse
     this.source = {}
+  }
+
+  parseSource (source) {
+      const medias = parseMediaList(source)
+      medias.forEach((media) => {
+          if (media.resolution && media.resolution === this.config.resolution) {
+              this.config.src = media.src
+          }
+      })
+      if (Array.isArray(this.config.src) && medias.length) {
+          this.config.src = medias[0].src
+      }
   }
 
   loadSDK (callback) {
@@ -110,16 +122,26 @@ class HLSCore extends BaseVideoCore {
     })
     this.hlsCore.on(HLS_EVENTS.ERROR, (e, result) => {
       console.log(result)
-      if (HLS_ERROR_WHITE[result.details]) {
+      if (HLS_ERROR_WHITE[result.type]) {
+        if (result.fatal) {
+            if (result.type === 'mediaError') {
+                HLS_ERROR_WHITE[result.type].count += 1
+                if (HLS_ERROR_WHITE[result.type].count === 1) {
+                    this.hlsCore.recoverMediaError()
+                } else if (HLS_ERROR_WHITE[result.type].count === 2) {
+                    this.hlsCore.swapAudioCodec()
+                    this.hlsCore.recoverMediaError()
+                } else {
+                    HLS_ERROR_WHITE[result.type].count = 0
+                }
+            } else if (result.type === 'networkError') {
+                this.hlsCore.startLoad()
+            }
+        }
         return
       }
-      if (ERROR_TYPE[result.details]) {
-        this.hlsErrorCount++
-        if (this.hlsErrorCount >= ERROR_TYPE[result.details]) {
-          this.hlsCore.detachMedia()
-          this.emit(EVENTS.CORE_TO_MP4, true)
-        }
-      }
+      this.hlsCore.detachMedia()
+      this.emit(EVENTS.CORE_TO_MP4, true)
       this.emit(EVENTS.ERROR, {
         code: 601,
         message: JSON.stringify({
