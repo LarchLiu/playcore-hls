@@ -240,6 +240,7 @@ class HLSCore extends BaseVideoCore {
   }
 
   uninstall() {
+    this.hlsCore.stopLoad()
     this.hlsCore.detachMedia()
   }
 }
