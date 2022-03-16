@@ -2,7 +2,7 @@ export const HLS_SDK = 'https://cdn.jsdelivr.net/npm/hls.js@latest'
 
 export const LOAD_SDK_TIMEOUT = 60 * 1000
 
-export const DEFAULT_HLS_RESOLUTION = 1080
+export const DEFAULT_HLS_RESOLUTION = '1080p'
 
 export const HLS_DEFAULT_CONFIG = {
   maxBufferLength: 10,

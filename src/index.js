@@ -1,7 +1,7 @@
 /**
  * A vue-core-video-player PlayCore for HLS Format
 */
-/* global Hls, hls */
+/* global Hls */
 import loadScript from 'load-script'
 import { BaseVideoCore, EVENTS } from '@cloudgeek/vue3-video-player'
 // import EVENTS from '../constants/EVENTS'
@@ -39,7 +39,7 @@ class HLSCore extends BaseVideoCore {
         hls.currentLevel = this._parse(result)
       } else {
         hls.startLevel = this._parse(result)
-        this.resolution = 'auto'
+        // this.resolution = 'auto'
       }
       this.updateState('frag', {})
       hls.startLoad()
@@ -168,15 +168,20 @@ class HLSCore extends BaseVideoCore {
   _parse(mainfest) {
     if (Array.isArray(mainfest.levels)) {
       const medias = []
-      mainfest.levels.forEach((item) => {
-        const resolution = item.height
-        medias.push({
-          url: item.url,
-          width: item.width,
-          height: item.height,
-          video_bitrate: item.bitrate,
-          resolution
-        })
+      const obj = {}
+      mainfest.levels.forEach((item, index) => {
+        const resolution = item.height + 'p'
+        if (!obj[resolution]) {
+          obj[resolution] = true
+          medias.push({
+            src: item.url,
+            index,
+            width: item.width,
+            height: item.height,
+            video_bitrate: item.bitrate,
+            resolution
+          })
+        }
       })
       return this.initResolution(medias)
     }
@@ -201,24 +206,32 @@ class HLSCore extends BaseVideoCore {
     // this..initResolution(null, medias)
     for (let i = 0; i < length; i++) {
       if (medias[i].resolution === DEFAULT_HLS_RESOLUTION) {
+        this.resolution = medias[i].resolution
         return i
       }
     }
+    this.resolution = medias[0].resolution
+    setTimeout(() => {
+      this.emit(EVENTS.SOURCE_UPDATED, this)
+    }, 200)
     return 0
   }
 
 
   setResolution(resolution) {
     const medias = this.medias
-    if (resolution === 'auto') {
-      this.resolution = resolution
-      return hls.hls.currentLevel = -1
-    }
+    // if (resolution === 'auto') {
+    //   this.resolution = resolution
+    //   return hls.hls.currentLevel = -1
+    // }
     if (medias && medias.length > 1) {
       for (let i = 0; i < medias.length; i++) {
-        if (medias[i].resolution === resolution * 1) {
-          hls.hls.currentLevel = i
-          this.config.src = medias[i].src
+        if (medias[i].resolution === resolution) {
+          this.hls.currentLevel = medias[i].index
+          // this.config.src = medias[i].src
+          this.resolution = resolution
+          this.emit(EVENTS.SOURCE_UPDATED, this)
+          break;
         }
       }
     }
