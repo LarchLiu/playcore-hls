@@ -33,14 +33,11 @@ class HLSCore extends BaseVideoCore {
     hls.attachMedia(this.$video)
     this.pause()
     hls.on(HLS_EVENTS.MANIFEST_PARSED, (event, result) => {
-      if (result.levels.length <= 1) {
-        hls.abrController.nextAutoLevel = -1
-        // hls.autoLevelEnabled = false
-        hls.currentLevel = this._parse(result)
-      } else {
-        hls.startLevel = this._parse(result)
-        // this.resolution = 'auto'
-      }
+      const level = this._parse(result)
+      hls.loadLevel = level
+      hls.currentLevel = level
+      hls.nextLevel = level
+      hls.startLevel = level
       this.updateState('frag', {})
       hls.startLoad()
       this._autoRegisterEvents()
@@ -204,17 +201,17 @@ class HLSCore extends BaseVideoCore {
     const length = medias.length
     this.medias = medias
     // this..initResolution(null, medias)
-    for (let i = 0; i < length; i++) {
-      if (medias[i].resolution === DEFAULT_HLS_RESOLUTION) {
-        this.resolution = medias[i].resolution
-        return i
-      }
-    }
-    this.resolution = medias[0].resolution
     setTimeout(() => {
       this.emit(EVENTS.SOURCE_UPDATED, this)
     }, 200)
-    return 0
+    for (let i = 0; i < length; i++) {
+      if (medias[i].resolution === DEFAULT_HLS_RESOLUTION) {
+        this.resolution = medias[i].resolution
+        return medias[i].index
+      }
+    }
+    this.resolution = medias[0].resolution
+    return medias[0].index
   }
 
 
