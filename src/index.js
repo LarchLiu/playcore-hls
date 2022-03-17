@@ -204,10 +204,19 @@ class HLSCore extends BaseVideoCore {
     setTimeout(() => {
       this.emit(EVENTS.SOURCE_UPDATED, this)
     }, 200)
-    for (let i = 0; i < length; i++) {
-      if (medias[i].resolution === DEFAULT_HLS_RESOLUTION) {
-        this.resolution = medias[i].resolution
-        return medias[i].index
+    if (this.config.resolution) {
+      for (let i = 0; i < length; i++) {
+        if (medias[i].resolution === this.config.resolution) {
+          this.resolution = medias[i].resolution
+          return medias[i].index
+        }
+      }
+    } else {
+      for (let i = 0; i < length; i++) {
+        if (medias[i].resolution === DEFAULT_HLS_RESOLUTION) {
+          this.resolution = medias[i].resolution
+          return medias[i].index
+        }
       }
     }
     this.resolution = medias[0].resolution
